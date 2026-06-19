@@ -34,3 +34,6 @@ const decrypt = (encryptedText)=>
 
     return decrypted;
 }
+
+
+module.exports={decrypt,encrypt}

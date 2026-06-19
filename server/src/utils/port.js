@@ -39,3 +39,5 @@ const findFreePort = async(initialPort = 3000)=>
 
     throw new Error('No free ports available')
 }
+
+module.exports={findFreePort}

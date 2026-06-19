@@ -5,3 +5,6 @@ const logger = {
     warn : (msg,data = ' ') => console.warn(`[WARN] ${msg}`,data),
     debug : (msg,data = ' ') => console.log(`[DEBUG] ${msg}`,data),
 }
+
+
+module.exports = {logger}
