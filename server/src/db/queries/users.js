@@ -46,5 +46,15 @@ const updateUserApiKey = async(userId, apiKey)=> {
 }
 
 
-module.exports = {updateUserApiKey, findByUser, findUserByApiKey, findUserById,}
+const createUser = async(data)=>
+{
+    const result = await db
+    .insert(users)
+    .values(data)
+    .returning();
+    return result[0];
+}
+
+
+module.exports = {updateUserApiKey,createUser, findByUser, findUserByApiKey, findUserById,}
 
