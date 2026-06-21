@@ -2,7 +2,7 @@
 
 const crypto = require('crypto');
 
-const {config} = require('../index')
+const {config} = require('../config/index')
 
 const ALGORITHM = 'aes-256-cbc'
 const KEY = Buffer.from(config.encryptionKey, 'utf8')

@@ -1,5 +1,5 @@
 const postgres = require('postgres')
-const {config} = require('../index.js')
+const {config} = require('./index.js')
 
  const sql = postgres(config.databaseUrl, {
     max: 10,

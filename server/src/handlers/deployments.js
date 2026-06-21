@@ -73,3 +73,6 @@ const getDeploymentsHandler = async(req,res)=>
         deployment
     })
 }
+
+
+module.exports = {getDeploymentsHandler,deployHandler}
