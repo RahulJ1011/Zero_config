@@ -4,9 +4,11 @@ const {deploymentRoutes} = require('./deployments')
 const {appRoutes} = require('./apps')
 
 
-export async function registerRoutes(fastify)
+ async function registerRoutes(fastify)
 {
     fastify.register(authRoutes)
     fastify.register(appRoutes)
     fastify.register(deploymentRoutes)
 }
+
+module.exports = {registerRoutes}

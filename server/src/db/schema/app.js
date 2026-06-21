@@ -2,7 +2,7 @@ const {text,integer,timestamp} = require('drizzle-orm/pg-core')
 const {users} = require('./user')
 const { PgTable } = require('drizzle-orm/pg-core')
 
-const apps = PgTable('apps', {
+const apps = new PgTable('apps', {
 
     id: text('id').primaryKey(),
 

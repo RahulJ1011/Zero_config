@@ -1,7 +1,7 @@
 const dotenv = require('dotenv')
 dotenv.config();
 
-export const config= {
+ const config= {
 
 
     port: parseInt(process.env.PORT) || 3000,
@@ -35,7 +35,7 @@ export const config= {
 }
 
 
-export function validateConfig()
+ function validateConfig()
 {
     const required = [
         'DATABASE_URL',
@@ -61,3 +61,7 @@ export function validateConfig()
         process.exit(1);
     }
 }
+
+
+
+module.exports = {config, validateConfig}

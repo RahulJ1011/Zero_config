@@ -1,13 +1,14 @@
+const { PgTable } = require('drizzle-orm/pg-core')
 const {apps} = require('./app')
 
-
-const envVars = require('envVars', {
+const { text, timestamp } = require('drizzle-orm/mysql-core')
+const envVars = new PgTable('envVars', {
 
     id: text('id').primaryKey(),
 
     appId: text('app_id')
     .notNull()
-    .references(()=> apps.id, {onDelete: cascade}),
+    .references(()=> apps.id, {onDelete: 'cascade'}),
 
      key: text('key').notNull(),
 

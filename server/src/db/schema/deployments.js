@@ -1,6 +1,7 @@
 const {timestamp} = require('drizzle-orm/pg-core')
 const {apps} = require('./app')
 const { pgTable } = require('drizzle-orm/pg-core')
+const { text } = require('drizzle-orm/mysql-core')
 
 const deployments = pgTable('deployments',{
     id: text('id').primaryKey(),
