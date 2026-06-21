@@ -68,3 +68,5 @@ const startDeployWorker = ()=>
 
   return worker
 }
+
+module.exports = {startDeployWorker}
