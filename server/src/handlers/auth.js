@@ -81,3 +81,6 @@ const loginHandler = async(req,res)=>
     }
   })
 }
+
+
+module.exports = {loginHandler,register}

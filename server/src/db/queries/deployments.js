@@ -49,3 +49,4 @@ const getDeploymentsByApp = (appId)=>
     .orderBy(desc(deployments.createdAt))
 }
 
+module.exports = {getDeploymentsByApp,getDeploymentId,updateDeploymentStatus,createDeployment}
