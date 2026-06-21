@@ -1,5 +1,5 @@
 const {nanoid} = require('nanoid')
-
+const Redis = require('ioredis')
 const {Queue} =  require('bullmq');
 const { getAppById } = require('../db/queries/apps');
 const { findFreePort } = require('../utils/port');
@@ -9,7 +9,7 @@ const { logger } = require('../utils/logger');
 
 
 const deployQueue = new Queue('deploy',{
-    connection: redis
+    connection: Redis
 })
 
 const deployHandler = async(req,res)=>

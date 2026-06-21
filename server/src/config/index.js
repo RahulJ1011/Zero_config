@@ -52,7 +52,7 @@ dotenv.config();
         'SSH_USER' ,
     ]
 
-    const missing = required.filter(key => !process.env(key))
+    const missing = required.filter(key => !process.env[key])
 
     if(missing.length>0)
     {

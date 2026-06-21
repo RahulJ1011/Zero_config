@@ -2,7 +2,8 @@ const { PgTable } = require('drizzle-orm/pg-core')
 const {apps} = require('./app')
 
 const { text, timestamp } = require('drizzle-orm/mysql-core')
-const envVars = new PgTable('envVars', {
+const { pgTable } = require('drizzle-orm/pg-core')
+const envVars =  pgTable('envVars', {
 
     id: text('id').primaryKey(),
 

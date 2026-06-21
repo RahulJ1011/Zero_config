@@ -1,6 +1,6 @@
 const { pgTable, text, timestamp } = require("drizzle-orm/pg-core");
 
-const users = pgTable("users", {
+const users =  pgTable("users", {
     id: text("id").primaryKey(),
 
     email: text("email").notNull().unique(),
