@@ -2,7 +2,7 @@ const {createApp, deleteApp, getAppById, getAppsByUser} = require("../db/queries
 
 const {nanoid} =  require('nanoid')
 
-
+const {logger} = require('../utils/logger')
 
 const listApps = async(req,res)=>
 {

@@ -16,7 +16,7 @@ const apps =  pgTable('apps', {
 
         language: text('language'),
         framework: text('framework'),
-        runTime: text('runTime'),
+        runTime: text('runtime'),
 
          status: text('status').default('deploying'),
 
