@@ -2,7 +2,8 @@
 
 const bcrypt = require('bcrypt')
 const {nanoid} = require('nanoid')
-const {createUser, findByUser} = require('../db/queries/users')
+const {createUser, findByUser} = require('../db/queries/users');
+const { logger } = require('../utils/logger');
 
 
 const register = async(req,res)=>
@@ -35,7 +36,7 @@ const register = async(req,res)=>
     email:  user.email,
   })
 
-   return reply.status(201).send({
+   return res.status(201).send({
     message: 'Account created successfully',
     token,
     apiKey: user.apiKey,
@@ -58,9 +59,9 @@ const loginHandler = async(req,res)=>
         })
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.passwordHash)
+    const passwordMatch = await bcrypt.compare(password, isUser.passwordHash)
   if (!passwordMatch) {
-    return reply.status(401).send({
+    return res.status(401).send({
       error: 'Invalid email or password'
     })
   }
@@ -68,16 +69,16 @@ const loginHandler = async(req,res)=>
   logger.info("User logged in", email)
 
   const token = await res.jwtSign({
-    userId: user.id,
-    email: user.email
+    userId: isUser.id,
+    email: isUser.email
   })
 
   return res.send({
     message: 'Login sucessful',
     token,
     user:{
-        id: user.id,
-        email: user.email
+        id: isUser.id,
+        email: isUser.email
     }
   })
 }

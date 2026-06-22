@@ -30,8 +30,7 @@ dotenv.config();
         privateKeyPath: process.env.SSH_PRIVATE_KEY_PATH
     },
 
-    caddyApiUrl: process.env.CADDYAPI_URL,
-
+   
 }
 
 
@@ -44,7 +43,7 @@ dotenv.config();
         'DATABASE_URL',
         'SSH_PRIVATE_KEY_PATH' ,
         'CADDY_API_URL',
-        'CLOUDFARE_API_URL',
+        
         'CLOUDFARE_ZONE_ID',
         'CLOUDFARE_API_TOKEN',
         'BASE_DOMAIN',

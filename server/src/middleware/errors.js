@@ -24,3 +24,5 @@ const errorHandler = (error,req,res)=>
   })
 
 }
+
+module.exports = {errorHandler}

@@ -4,7 +4,7 @@ const {Worker } = require('bullmq')
 const { updateDeploymentStatus } = require('../db/queries/deployments')
 const { updateAppStatus } = require('../db/queries/apps')
 const { logger } = require('../utils/logger')
-
+const {redis} = require('../config/redis')
 
 
 

@@ -8,8 +8,8 @@ const getAppsByUser = async(userId)=>
     const result = await db
     .select()
     .from(apps)
-    .where(eq(apps.userId. userId))
-    return result[0] || null;
+    .where(eq(apps.userId, userId))
+    return result;
 }
 
 

@@ -1,4 +1,4 @@
-const { listApps, getApp, createAppHandler } = require('../handlers/apps');
+const { listApps, getApp, createAppHandler, deleteApp } = require('../handlers/apps');
 const {authMiddleware} = require('../middleware/auth')
 
 
@@ -10,7 +10,7 @@ const appRoutes = async(fastify)=>
 
     fastify.get('/apps/:id',getApp);
 
-    fastofy.post('/apps',{
+    fastify.post('/apps',{
         schema:
         {
             body:
@@ -28,7 +28,7 @@ const appRoutes = async(fastify)=>
     },createAppHandler)
 
 
-     fastify.delete('/apps/:id', deleteAppHandler)
+     fastify.delete('/apps/:id', deleteApp)
 }
 
 module.exports = {appRoutes}

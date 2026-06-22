@@ -6,6 +6,7 @@ const {logger} =  require('./utils/logger')
 const { validateConfig, config } = require('./config')
 const { registerRoutes } = require('./routes')
 const { startDeployWorker } = require('./workers/deploy.worker')
+const { errorHandler } = require('./middleware/errors')
 
 
 const startServer = async()=>
