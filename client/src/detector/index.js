@@ -79,3 +79,6 @@ function getStatus(signal) {
   if (!signal.framework || signal.framework === 'unknown') return 'generic'
   return 'confident'
 }
+
+
+module.exports = {detect}
