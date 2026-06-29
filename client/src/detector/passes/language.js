@@ -92,12 +92,36 @@ const identifyLanguage = (files,rootDir)=>
 
       if(language == 'python')
       {
+        const result = await detectPythonFramework(rootDir,files);
 
+        framework = framework || result.framework,
+        port= result.port,
+        startCmd = result.startCmd,
+        runTime = 'python3.11'
       }
 
+    
+      if(language == 'go')
+      {
+        const result = await detectGoFrameWork(rootDir,files);
+        framework = framework || result.framework,
+        port = result.port || 8080,
+        startCmd = result.startCmd || './app',
+        runTime = 'go1.22',
+        buildCmd = 'go build -o app .'
+      }
 
-
-      
+      if(!framework)
+      {
+        const defaults = LANGUAGE_DEFAULTS[language]
+        if(defaults)
+        {
+            buildCmd = buildCmd || defaults.buildCmd
+      startCmd = startCmd || defaults.startCmd
+      runtime  = runtime  || defaults.runtime
+      port     = port     || defaults.port
+        }
+      }
       return {
             language:   'unknown',
             framework:  'unknown',
@@ -114,9 +138,75 @@ const identifyLanguage = (files,rootDir)=>
 
 
 
+const detectPythonFramework = async(rootDir,files)=>
+{
+    let lines = [];
+
+    try
+    {
+        const content = fs.readFileSync(path.join(rootDir,'requirements.txt'),'utf8')
+
+        lines = content.split('\n').map(l=> l.toLowerCase().trim())
+        console.log("packages:         ", lines)
+    }
+
+    catch(err)
+    {
+        console.log(err)
+    }
+
+    for(const signal of PYTHON_FRAMEWORK_DEPS)
+    {
+        const found = lines.some(line => line.startsWith(signal.dep.toLowerCase()))
+        if(found)
+        {
+            return{
+                framework: signal.framework,
+                startCmd: signal.startCmd,
+                port: signal.port
+            }
+        }
+
+    }
+     return {
+    framework: 'python',
+    startCmd:  'python main.py',
+    port:      8000,
+  }
+}
 
 
 
+const detectGoFrameWork = async(rootDir,files)=>
+{
+    let content = ''
+
+    try
+    {
+        content = fs.readFileSync(path.join(rootDir,'go.mod'),'utf8')
+    }
+
+    catch(err)
+    {
+        console.log(err);
+    }
+for (const signal of GO_FRAMEWORK_DEPS) {
+    if (content.includes(signal.dep)) {
+      return {
+        framework: signal.framework,
+        startCmd:  signal.startCmd,
+        port:      signal.port,
+      }
+    }
+  }
+
+  return {
+    framework: 'go',
+    startCmd:  './app',
+    port:      8080,
+  }
+
+}
 const detectNodeFrameWork = async(rootDir,files)=>
 {
     const pkgPath = path.join(rootDir,'package.json')
@@ -231,3 +321,6 @@ const extensionFallBack = (Files,rootDir)=>
     confidence: 0,
   }
 }
+
+
+module.exports = {identifyLanguage}
