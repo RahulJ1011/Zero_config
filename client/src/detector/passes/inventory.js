@@ -72,4 +72,39 @@ const hasFile = (files,fileName)=>
     return files.has(fileName)
 }
 
+const getExtensions = (files)=>
+{
+    const counts = {};
+    for(const [filepath] of files)
+    {
+        const ext = path.extname(filepath).replace('.','')
+        if(ext)
+        {
+            counts[ext] = (counts[ext] || 0)+1;
+        }
+        return counts;
+    }
+}
 
+
+const hasFileMatching = (files,pattern)=>
+{
+    const regex = new RegExp(
+        '^' + pattern.replace('.','\\.').replace('*','.*')+'$'
+    )
+
+
+    for(const [filepath] of files)
+    {
+        const baseName = path.basename(filepath)
+
+        if(regex.test(baseName))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+module.exports = {hasFile,hasFileMatching,getExtensions,buildInventory}
