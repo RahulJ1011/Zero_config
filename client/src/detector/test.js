@@ -4,7 +4,9 @@ const { handleUnknown } = require("./providers/unknown")
 
 
 
-const projectPath = process.argv[2] || '.'
+async function main()
+{
+    const projectPath = process.argv[2] || '.'
 
 
 console.log(`\nDetecting stack in: ${projectPath}\n`)
@@ -48,3 +50,8 @@ if (result.userMessage) {
 
 
 console.log('─────────────────────────────────\n')
+
+}
+
+
+main().catch(console.error)

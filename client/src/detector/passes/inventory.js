@@ -22,6 +22,7 @@ const SKIP_FOLDERS = new Set([
 
 const buildInventory = (rootDir, recursive = false)=>
 {
+     rootDir = path.resolve(rootDir).toLowerCase()
     const files = new Map();
 
     function walk(dir,depth=0)
@@ -51,7 +52,10 @@ const buildInventory = (rootDir, recursive = false)=>
 
 
             const fullPath = path.join(dir,entry.name)
-            const relativePath = path.relative(rootDir, fullPath)
+            const normalizedRoot = rootDir.toLowerCase()
+const normalizedFull = fullPath.toLowerCase()
+const relativePath = path.relative(normalizedRoot, fullPath.toLowerCase())
+
 
             if(entry.isDirectory())
             {

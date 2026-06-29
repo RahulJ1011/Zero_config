@@ -12,7 +12,7 @@ const {
 } = require('../signals')
 
 const {hasFile, getExtensions} = require('./inventory')
-const identifyLanguage = (files,rootDir)=>
+const identifyLanguage = async(files,rootDir)=>
 {
 
 
@@ -285,7 +285,7 @@ function detectNodeVersion(pkg,files,rootDir)
 
 
 
-const extensionFallBack = (Files,rootDir)=>
+const extensionFallBack = (files,rootDir)=>
 {
     const extCounts = getExtensions(files);
 

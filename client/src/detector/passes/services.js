@@ -46,7 +46,7 @@ const inferServices = async(files,rootDir,stackSignal)=>
 const detectCache = async(files,rootDir,stackSignal)=>
 {
 
-    if (signal.language === 'nodejs') {
+    if (stackSignal.language === 'nodejs') {
     const pkg = readJson(path.join(rootDir, 'package.json'))
     if (pkg) {
       const allDeps = { ...pkg.dependencies, ...pkg.devDependencies }

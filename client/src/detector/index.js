@@ -10,8 +10,12 @@ const detect = async(projectDir)=>
 
     const rootDir = path.resolve(projectDir)
 
+    console.log("rootDir passed to build Inventory",rootDir)
+
     let files = buildInventory(rootDir, false)
 
+    console.log('Files found: ', files.size)
+    console.log('files:', [...files.keys()])
 
 
     if(hasFile(files,'Dockerfile'))

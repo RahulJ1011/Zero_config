@@ -13,16 +13,17 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "fastify": "^4.24.3",
-    "@fastify/jwt": "^7.2.4",
     "@fastify/cors": "^8.4.1",
-    "dotenv": "^16.3.1",
-    "postgres": "^3.4.3",
-    "drizzle-orm": "^0.29.1",
-    "bullmq": "^5.1.1",
-    "ioredis": "^5.3.2",
+    "@fastify/jwt": "^7.2.4",
     "bcrypt": "^5.1.1",
-    "nanoid": "^5.0.4"
+    "bullmq": "^5.1.1",
+    "dotenv": "^16.3.1",
+    "drizzle-orm": "^0.29.1",
+    "fastify": "^4.24.3",
+    "ioredis": "^5.3.2",
+    "nanoid": "^5.0.4",
+    "postgres": "^3.4.3",
+    "ssh2": "^1.17.0"
   },
   "devDependencies": {
     "drizzle-kit": "^0.20.7"
