@@ -16,6 +16,7 @@ dotenv.config();
 
     encryptionKey: process.env.ENCRYPTIONKEY,
 
+    caddyApiUrl: porcess.env.CADDY_API_URL,
 
     baseDomain: process.env.BASE_DOMAIN,
 
