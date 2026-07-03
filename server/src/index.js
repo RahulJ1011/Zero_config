@@ -7,6 +7,7 @@ const { validateConfig, config } = require('./config')
 const { registerRoutes } = require('./routes')
 const { startDeployWorker } = require('./workers/deploy.worker')
 const { errorHandler } = require('./middleware/errors')
+const { startAllWorkers } = require('./workers')
 
 
 const startServer = async()=>
@@ -39,7 +40,7 @@ const startServer = async()=>
     }
   })
 
-  startDeployWorker();
+startAllWorkers();
   logger.info("Deploy worker started")
 
   await app.listen({

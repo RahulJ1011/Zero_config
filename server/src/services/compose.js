@@ -400,3 +400,5 @@ volumes:
 
   return compose
 }
+
+module.exports = {generateCompose}

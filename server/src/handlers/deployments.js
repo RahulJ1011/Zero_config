@@ -11,7 +11,7 @@ const { logger } = require('../utils/logger');
 const deployQueue = new Queue('deploy',{
     connection: Redis
 })
-
+const destroyQueue = new Queue('destroy',{connection: redis})
 const deployHandler = async(req,res)=>
 {
     const {appId, manifest} = req.body;
@@ -44,8 +44,18 @@ const deployHandler = async(req,res)=>
     deploymentId: deployment.id,
     appId:        app.id,
     appName:      app.name,
-    manifest,
-    port,
+    manifest: manifest || {
+         language:  app.language ,
+      framework: app.framework ,
+      runtime:   app.runtime   ,
+      buildCmd:  null,
+      startCmd:  'npm start',
+      port:      3000,
+      services:  {},
+      envVars:   { required: [], detected: [] },
+    },
+    port: 3000
+   
   })
 
   logger.info("Deployment Queued",app.name)
@@ -56,6 +66,33 @@ const deployHandler = async(req,res)=>
     deploymentID: deployment.id,
     jobId: job.id,
     status: 'queued'
+  })
+}
+
+const destroyHandler = (req,res)=>
+{
+    const {appId} = req.body;
+
+    const app = await getAppById(appId);
+    if(!app)
+    {
+        return res.status(404).send({error: 'App not found'})
+    }
+
+    if(app.userId!=req.userId)
+    {
+        return res.status(403).send({error: 'Acces denied'})
+    }
+
+    const job = await destroyQueue.add('destroy',{
+        appId: app.id,
+        appName: app.name
+    })
+
+     return reply.status(202).send({
+    message: 'Destroy started',
+    jobId:   job.id,
+    status:  'queued',
   })
 }
 

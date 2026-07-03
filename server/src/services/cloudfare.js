@@ -77,7 +77,24 @@ const deleteRecord = async(appName)=>
     {
         const records = await cfRequest(
             'GET',
-            ''
+            `/zones/${ZONE_ID}/dns_records?name=${name}`
         )
+
+        if(!record || records.length === 0)
+        {
+            logger.warn('DNS record not found',name)
+            return;
+        }
+
+        await cfRequest('DELETE',`/zones/${ZONE_ID}/dns_records/${records[0].id}`)
+
+        logger.info('DNS records deleted', name);
+    }
+    catch(err)
+    {
+        logger.error('Failed to delete DNS record', error.message);
+        throw error;
     }
 }
+
+module.exports = {createDNSRecord,deleteRecord}

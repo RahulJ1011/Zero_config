@@ -201,3 +201,5 @@ const sshService = {
     }
 
 }
+
+module.exports = {sshService}
