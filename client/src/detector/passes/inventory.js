@@ -22,58 +22,70 @@ const SKIP_FOLDERS = new Set([
 
 const buildInventory = (rootDir, recursive = false)=>
 {
-     rootDir = path.resolve(rootDir).toLowerCase()
+     
     const files = new Map();
 
-    function walk(dir,depth=0)
-    {
-        if(!recursive && depth>2)
-            return;
+const absoluteRoot = path.resolve(rootDir);
 
+console.log("absoluteRoot:", absoluteRoot)
+console.log("rootDir input: ", rootDir)
 
-        let entries
+console.log('rootDir passed to build Inventory', absoluteRoot)
 
-        try
-        {
-            entries = fs.readdirSync(dir,{withFileTypes: true})
+     function walk(dir, depth = 0) {
+    if (!recursive && depth > 2) return
 
-        }
-        catch(err)
-        {
-            console.log(err);
-            return {msg: "can't read this directory"}
-        }
-
-        for(const entry of entries)
-        {
-            if(SKIP_FOLDERS.has(entry.name)) continue;
-
-            if(entry.name.startsWith('.') && entry.isDirectory()) continue;
-
-
-            const fullPath = path.join(dir,entry.name)
-            const normalizedRoot = rootDir.toLowerCase()
-const normalizedFull = fullPath.toLowerCase()
-const relativePath = path.relative(normalizedRoot, fullPath.toLowerCase())
-
-
-            if(entry.isDirectory())
-            {
-                walk(fullPath,depth+1);
-            }
-            else
-            {
-                files.set(relativePath,true)
-            }
-        }
+    let entries
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true })
+    } catch {
+      return
     }
-    walk(rootDir)
+
+    for (const entry of entries) {
+      if (SKIP_FOLDERS.has(entry.name)) continue
+      if (entry.name.startsWith('.') && entry.isDirectory()) continue
+
+      const fullPath    = path.join(dir, entry.name)
+
+      const relativePath = path.relative(absoluteRoot,fullPath)
+
+      // relative to absoluteRoot — not the parent
+      const normalizedPath = relativePath.replace(/\\/g, '/')
+
+    
+      if(files.size < 3)
+      {
+        console.log('fullPath:', fullPath)
+        console.log('relativePath:', relativePath)
+        console.log('normalized:', normalizedPath)
+      }
+
+      if (entry.isDirectory()) {
+        walk(fullPath, depth + 1)
+      } else {
+        // normalize backslashes to forward slashes
+        // so signals.js checks work on Windows
+        
+        files.set(normalizedPath, true)
+      }
+    }
+  }
+    walk(absoluteRoot)
+    console.log('Files found: ', files.size)
+  console.log('files:', [...files.keys()])
     return files
 }
 
 const hasFile = (files,fileName)=>
 {
-    return files.has(fileName)
+    if (files.has(fileName)) return true
+
+  // check in common monorepo subfolders
+  const subfolders = ['client', 'frontend', 'web', 'app', 'src']
+  for (const folder of subfolders) {
+    if (files.has(`${folder}/${fileName}`)) return true
+  }
 }
 
 const getExtensions = (files)=>

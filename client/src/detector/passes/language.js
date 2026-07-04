@@ -15,7 +15,13 @@ const {hasFile, getExtensions} = require('./inventory')
 const identifyLanguage = async(files,rootDir)=>
 {
 
-
+    /* console.log('Checking signals against files...')
+  console.log('Has package.json:', files.has('package.json'))
+  console.log('Has package-lock.json:', files.has('package-lock.json'))
+  console.log('Has client/vite.config.js:', files.has('client/vite.config.js'))
+  console.log('Has vite.config.js:', files.has('vite.config.js'))
+ */
+  
     const scores  = {};
     let detectedFramework = null;
     let frameworkWeight=0;
@@ -59,6 +65,7 @@ const identifyLanguage = async(files,rootDir)=>
         }
     }
 
+    console.log("Scores: ", scores)
 
       const sorted = Object.entries(scores).sort(([, a], [, b]) => b - a)
 
@@ -111,7 +118,7 @@ const identifyLanguage = async(files,rootDir)=>
         buildCmd = 'go build -o app .'
       }
 
-      if(!framework)
+      if(!framework || framework === 'unknown')
       {
         const defaults = LANGUAGE_DEFAULTS[language]
         if(defaults)
@@ -122,16 +129,16 @@ const identifyLanguage = async(files,rootDir)=>
       port     = port     || defaults.port
         }
       }
-      return {
-            language:   'unknown',
-            framework:  'unknown',
-            runtime:    'unknown',
-            buildCmd:   null,
-            startCmd:   null,
-            port:       3000,
-            isStatic:   false,
-            confidence: 0,
-        }
+     return {
+    language,
+    framework:  framework || 'unknown',
+    runtime:    runtime   || 'node20',
+    buildCmd,
+    startCmd,
+    port:       port      || 3000,
+    isStatic,
+    confidence,
+  }
 
 
 }
@@ -209,12 +216,38 @@ for (const signal of GO_FRAMEWORK_DEPS) {
 }
 const detectNodeFrameWork = async(rootDir,files)=>
 {
+
+     const possiblePaths = [
+    path.join(rootDir, 'package.json'),
+    path.join(rootDir, 'client', 'package.json'),
+    path.join(rootDir, 'frontend', 'package.json'),
+    path.join(rootDir, 'web', 'package.json'),
+    path.join(rootDir, 'app', 'package.json'),
+  ]
+
+
     const pkgPath = path.join(rootDir,'package.json')
 
     let pkg = {};
 
+     for (const pkgPath of possiblePaths) {
+    try {
+      const content = fs.readFileSync(pkgPath, 'utf8')
+      const parsed  = JSON.parse(content)
+      const allDeps = { ...parsed.dependencies, ...parsed.devDependencies }
 
-    try
+      // only use this package.json if it has meaningful dependencies
+      if (Object.keys(allDeps).length > 0) {
+        pkg = parsed
+        break
+      }
+    } catch {}
+  }
+
+
+
+
+    /* try
     {
         const content = fs.readFileSync(pkgPath,'utf8');
         pkg = JSON.parse(content)
@@ -222,7 +255,7 @@ const detectNodeFrameWork = async(rootDir,files)=>
     catch(err)
     {
         return {msg:"file not found"}
-    }
+    } */
     
 
     const allDeps = {
@@ -233,7 +266,9 @@ const detectNodeFrameWork = async(rootDir,files)=>
     for(const signal of NODE_FRAMEWORK_DEPS)
     {
         if(allDeps[signal.dep])
+
         {
+             console.log('Framework detected:', signal.framework, 'via dep:', signal.dep)
             return  {
            
                 framework: 'node',
@@ -264,8 +299,8 @@ function detectNodeVersion(pkg,files,rootDir)
 {
     try
     {
-        const nvrmc = fs.readFileSync(
-            path.join(rootDir,'.nvrmc'),'utf8'
+        const nvmrc    = fs.readFileSync(
+            path.join(rootDir,'.nvmrc   '),'utf8'
         ).trim()
           const version = nvmrc.replace('v', '').split('.')[0]
     return `node${version}`

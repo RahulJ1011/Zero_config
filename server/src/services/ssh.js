@@ -15,12 +15,7 @@ const createConnection = ()=>
         'SSH not configured. Set SSH_HOST and SSH_PRIVATE_KEY_PATH in .env'
       ))
     } 
-
-    if (!fs.existsSync(config.ssh.privateKeyPath)) {
-      return reject(new Error(
-        `SSH key file not found: ${config.ssh.privateKeyPath}`
-      ))
-    }
+    
     
         const conn = new Client()
 

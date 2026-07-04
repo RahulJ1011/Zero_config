@@ -32,15 +32,12 @@ const MANIFEST_SIGNALS = [
 ]
 
 const FRAMEWORK_SIGNALS = [
-     { file: 'next.config.js',    language: 'nodejs', framework: 'nextjs',   weight: 0.97 },
-  { file: 'next.config.ts',    language: 'nodejs', framework: 'nextjs',   weight: 0.97 },
-  { file: 'next.config.mjs',   language: 'nodejs', framework: 'nextjs',   weight: 0.97 },
-  // Nuxt
-  { file: 'nuxt.config.ts',    language: 'nodejs', framework: 'nuxt',     weight: 0.97 },
-  { file: 'nuxt.config.js',    language: 'nodejs', framework: 'nuxt',     weight: 0.97 },
-  // SvelteKit
-  { file: 'svelte.config.js',  language: 'nodejs', framework: 'svelte',   weight: 0.97 },
-  { file: 'svelte.config.ts',  language: 'nodejs', framework: 'svelte',   weight: 0.97 },
+// In FRAMEWORK_SIGNALS array, add these alongside existing ones:
+{ file: 'client/vite.config.js',   language: 'nodejs', framework: 'vite',   weight: 0.85 },
+{ file: 'client/next.config.js',   language: 'nodejs', framework: 'nextjs', weight: 0.97 },
+{ file: 'client/next.config.ts',   language: 'nodejs', framework: 'nextjs', weight: 0.97 },
+{ file: 'client/nuxt.config.ts',   language: 'nodejs', framework: 'nuxt',   weight: 0.97 },
+{ file: 'client/svelte.config.js', language: 'nodejs', framework: 'svelte', weight: 0.97 },
   // Astro
   { file: 'astro.config.mjs',  language: 'nodejs', framework: 'astro',    weight: 0.97 },
   { file: 'astro.config.ts',   language: 'nodejs', framework: 'astro',    weight: 0.97 },

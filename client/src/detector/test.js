@@ -30,7 +30,7 @@ console.log(`Status:      ${result.status}`)
 console.log(`Can proceed: ${result.canProceed}`)
 
 
-if (Object.keys(result.services).length > 0) {
+if (result.services && Object.keys(result.services).length > 0) {
   console.log('\nServices needed:')
   for (const [name, info] of Object.entries(result.services)) {
     console.log(`  ${name}: ${info.type} ${info.version || ''}`)
@@ -38,7 +38,7 @@ if (Object.keys(result.services).length > 0) {
 }
 
 
-if (result.envVars.required.length > 0) {
+if (result.envVars?.required?.length > 0) {
   console.log('\nSecrets needed from user:')
   result.envVars.required.forEach(k => console.log(`  ${k}`))
 }
