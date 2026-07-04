@@ -1,6 +1,7 @@
 const dotenv = require('dotenv')
 dotenv.config();
-
+const keyPath = process.env.SSH_PRIVATE_KEY_PATH;
+console.log(keyPath);
  const config= {
 
 
@@ -16,7 +17,7 @@ dotenv.config();
 
     encryptionKey: process.env.ENCRYPTIONKEY,
 
-    caddyApiUrl: porcess.env.CADDY_API_URL,
+    caddyApiUrl: process.env.CADDY_API_URL,
 
     baseDomain: process.env.BASE_DOMAIN,
 

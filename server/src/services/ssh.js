@@ -8,6 +8,20 @@ const { config } = require('../config/index');
 const createConnection = ()=>
 {
     return new Promise((resolve,reject)=> {
+
+
+        if (!config.ssh.host || !config.ssh.privateKeyPath) {
+      return reject(new Error(
+        'SSH not configured. Set SSH_HOST and SSH_PRIVATE_KEY_PATH in .env'
+      ))
+    } 
+
+    if (!fs.existsSync(config.ssh.privateKeyPath)) {
+      return reject(new Error(
+        `SSH key file not found: ${config.ssh.privateKeyPath}`
+      ))
+    }
+    
         const conn = new Client()
 
         conn.on('ready',()=>

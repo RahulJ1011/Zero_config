@@ -32,7 +32,7 @@ const updateDeploymentStatus = async(id,status, extra={})=>
     .update(deployments)
     .set({
         status,
-        updatedAt: Date.now(),
+        updatedAt: new Date(),
         ...extra
     })
     .where(eq(deployments.id,id))

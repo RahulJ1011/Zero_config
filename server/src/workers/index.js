@@ -2,8 +2,10 @@ const {startDestroyWorker} = require('./destroy.worker')
 
 const {startDeployWorker} = require('./deploy.worker')
 
-export const startAllWorkers = ()=>
+ const startAllWorkers = ()=>
 {
     startDeployWorker()
     startDestroyWorker();
 }
+
+module.exports = {startAllWorkers}

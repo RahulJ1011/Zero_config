@@ -63,14 +63,14 @@ const startDeployWorker = ()=>
 
     catch(err)
     {
-        logger.error('Deployment failed', error.message)
+        logger.error('Deployment failed', err.message)
 
         await updateDeploymentStatus(deploymentId, 'failed', {
-        errorMessage: error.message
+        errorMessage: err.message
       })
       await updateAppStatus(appId, 'failed')
 
-      throw error
+      throw err
     }
 
     }, {connection: redis,
@@ -81,7 +81,7 @@ const startDeployWorker = ()=>
         logger.info('completed', job.id)
     })
 
-    worker.on('failed', (job, err) => {
+    worker.on('failed', async(job, err) => {
     logger.error('Job failed', err.message)
 
     if(job?.data?.deploymentId)
@@ -91,7 +91,7 @@ const startDeployWorker = ()=>
         await updateDeploymentStatus(
           job.data.deploymentId,
           'failed',
-          {errorMessage: error.message}
+          {errorMessage: err.message}
         )
 
         await updateAppStatus(job.data.appId, 'failed'

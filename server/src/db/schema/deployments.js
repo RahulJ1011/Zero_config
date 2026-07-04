@@ -14,9 +14,9 @@ const deployments = pgTable('deployments',{
 
         logs: text('logs'),
 
-        commitHash: text('commit_Hash'),
+        commitHash: text('commit_hash'),
 
-        errorMessage: text('error_Message'),
+        errorMessage: text('error_message'),
 
         createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

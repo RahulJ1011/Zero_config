@@ -11,12 +11,13 @@ const { logger } = require('../utils/logger');
 const deployQueue = new Queue('deploy',{
     connection: Redis
 })
-const destroyQueue = new Queue('destroy',{connection: redis})
+const destroyQueue = new Queue('destroy',{connection: Redis})
 const deployHandler = async(req,res)=>
 {
     const {appId, manifest} = req.body;
 
-    const app = getAppById(appId);
+    const app = await getAppById(appId);
+    console.log(app);
     if(!app)
     {
         return res.status(404).send({
@@ -27,12 +28,14 @@ const deployHandler = async(req,res)=>
 
     if(app.userId!==req.userId)
     {
+        console.log(app.userId)
+        console.log(req.userId)
         return res.status(401).send({
             error:"Access denied"
         })
     }
 
-    const port = findFreePort(3000);
+    const port = await findFreePort(3000);
 
     const deployment = await createDeployment({
         id: 'deploy'+nanoid(12),
@@ -69,7 +72,7 @@ const deployHandler = async(req,res)=>
   })
 }
 
-const destroyHandler = (req,res)=>
+const destroyHandler = async(req,res)=>
 {
     const {appId} = req.body;
 
@@ -112,4 +115,4 @@ const getDeploymentsHandler = async(req,res)=>
 }
 
 
-module.exports = {getDeploymentsHandler,deployHandler}
+module.exports = {getDeploymentsHandler,deployHandler,destroyHandler}
