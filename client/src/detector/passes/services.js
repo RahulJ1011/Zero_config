@@ -182,8 +182,9 @@ const detectDatabase = async(files,rootDir, signal) =>
     if(signal.language === 'python')
     {
         const lines = readLines(path.join(rootDir,'requirements.txt'))
-
-        const dbSignals = DATABASE_SIGNALS.python;
+        if(lines.length)
+        {
+             const dbSignals = DATABASE_SIGNALS.python;
 
         for(const s of dbSignals)
         {
@@ -234,6 +235,8 @@ const detectDatabase = async(files,rootDir, signal) =>
         }
     }
 
+        }
+       
 
     return null;
 
@@ -273,8 +276,8 @@ function readLines(filePath)
     }
     catch(err)
     {
-        console.log(err);
-        return null;
+       
+        return [];
     }
 }
 

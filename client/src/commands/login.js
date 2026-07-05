@@ -35,6 +35,8 @@ const loginCommand = new Command('login')
 
          config.set('apiKey', 'th_demo_key_123')
       config.set('email', answers.email)
+      config.set('token', answers.token)
+     
 
 
        spinner.succeed('Logged in successfully')

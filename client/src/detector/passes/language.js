@@ -81,7 +81,7 @@ const identifyLanguage = async(files,rootDir)=>
       let framework = detectedFramework
       let buildCmd = null;
       let startCmd = null;
-      let runTime = null;
+      let runtime = null;
       let port = null;
       let isStatic = null;
 
@@ -118,6 +118,16 @@ const identifyLanguage = async(files,rootDir)=>
         buildCmd = 'go build -o app .'
       }
 
+
+      if(language === 'java' || language === 'kotlin')
+      {
+        const result = await detectJavaFrameWork(rootDir,files)
+        framework = framework || result.framework
+         startCmd  = result.startCmd
+            buildCmd  = result.buildCmd
+            port      = result.port
+            runtime   = 'java21'
+      }
       if(!framework || framework === 'unknown')
       {
         const defaults = LANGUAGE_DEFAULTS[language]
@@ -130,16 +140,18 @@ const identifyLanguage = async(files,rootDir)=>
         }
       }
      return {
-    language,
-    framework:  framework || 'unknown',
-    runtime:    runtime   || 'node20',
-    buildCmd,
-    startCmd,
-    port:       port      || 3000,
-    isStatic,
-    confidence,
-  }
-
+  language,
+  framework:  framework || 'unknown',
+  runtime:    runtime   || (language === 'python' ? 'python3.11'
+                          : language === 'go'     ? 'go1.22'
+                          : language === 'rust'   ? 'rust'
+                          : 'node20'),
+  buildCmd,
+  startCmd,
+  port:       port      || 3000,
+  isStatic,
+  confidence,
+}
 
 }
 
@@ -159,7 +171,7 @@ const detectPythonFramework = async(rootDir,files)=>
 
     catch(err)
     {
-        console.log(err)
+        console.log('This project has no Requirements.txt file')
     }
 
     for(const signal of PYTHON_FRAMEWORK_DEPS)
@@ -170,11 +182,48 @@ const detectPythonFramework = async(rootDir,files)=>
             return{
                 framework: signal.framework,
                 startCmd: signal.startCmd,
-                port: signal.port
+                port: signal.port,
+                
             }
         }
 
     }
+
+     const managePyPath = findFileAnywhere(files, 'manage.py')
+  const wsgiPyPath   = findFileAnywhere(files, 'wsgi.py')
+  const asgiPyPath   = findFileAnywhere(files, 'asgi.py')
+
+     if (managePyPath) {
+    // dynamically find the Django project name
+    // by looking for settings.py in the file tree
+    const projectName = findDjangoProjectName(files)
+
+    return {
+      framework: 'django',
+      startCmd:  `gunicorn ${projectName}.wsgi:application`,
+      port:      8000,
+    }
+  }
+
+  const hasAppPy   = findFileAnywhere(files, 'app.py')
+  const hasMainPy  = findFileAnywhere(files, 'main.py')
+  const hasServerPy = findFileAnywhere(files, 'server.py')
+
+if (hasAppPy) {
+    return {
+      framework: 'flask',
+      startCmd:  'gunicorn app:app',
+      port:      8000,
+    }
+  }
+
+  if (hasMainPy) {
+    return {
+      framework: 'fastapi',
+      startCmd:  'uvicorn main:app --host 0.0.0.0 --port 8000',
+      port:      8000,
+    }
+  }
      return {
     framework: 'python',
     startCmd:  'python main.py',
@@ -214,6 +263,78 @@ for (const signal of GO_FRAMEWORK_DEPS) {
   }
 
 }
+
+
+const detectJavaFrameWork = async(rootDir,files)=>
+{
+    try
+    {
+        const content = fs.readFileSync(path.join(rootDir,'pom.xml'),'utf8')
+
+            if(content.includes('spring-boot'))
+            {
+                return {
+            framework: 'spring-boot',
+            startCmd:  'java -jar target/*.jar',
+            buildCmd:  'mvn package -DskipTests',
+            port:      8080,
+        }
+            }
+            if (content.includes('quarkus')) {
+        return {
+            framework: 'quarkus',
+            startCmd:  'java -jar target/quarkus-app/quarkus-run.jar',
+            buildCmd:  'mvn package -DskipTests',
+            port:      8080,
+        }
+        }
+        if (content.includes('micronaut')) {
+            return {
+                framework: 'micronaut',
+                startCmd:  'java -jar target/*.jar',
+                buildCmd:  'mvn package -DskipTests',
+                port:      8080,
+            }
+        }
+    }
+    catch(err)
+    {
+
+    }
+
+    try
+    {
+        const content = fs.readFileSync(path.join(rootDir, 'build.gradle'),'utf8')
+
+
+        if(content.includes('spring-boot'))
+        {
+            return {
+        framework: 'spring-boot',
+        startCmd:  'java -jar build/libs/*.jar',
+        buildCmd:  'gradle build -x test',
+        port:      8080,
+      }
+        }
+    }
+    catch
+    {
+
+    }
+
+    return {
+    framework: 'java',
+    startCmd:  'java -jar target/*.jar',
+    buildCmd:  'mvn package -DskipTests',
+    port:      8080,
+  }
+}
+
+
+
+
+
+
 const detectNodeFrameWork = async(rootDir,files)=>
 {
 
@@ -355,6 +476,57 @@ const extensionFallBack = (files,rootDir)=>
     isStatic:   false,
     confidence: 0,
   }
+}
+
+
+
+function findFileAnywhere(files,fileName){
+    for(const[filepath] of files)
+    {
+        if(filepath === fileName || filepath.endsWith('/'+fileName))
+        {
+            return filepath;
+        }
+        
+    }
+    return null;
+}
+
+function findDjangoProjectName(files)
+{
+    for(const[filepath] of files)
+    {
+        if(filepath.endsWith('settings.py'))
+        {
+            const parts = filepath.split('/')
+
+            if(parts.length == 1)
+            {
+                return 'app';
+            }
+
+            if (parts.length === 2) {
+        // 'blog/settings.py' → project name is 'blog'
+        return parts[0]
+      }
+      
+      if (parts.length >= 3) {
+        // 'mysite/mysite/settings.py' → Django standard structure
+        // the SECOND part is the actual Django project package
+        return parts[parts.length - 2]
+      }
+        }
+    }
+
+     for (const [filepath] of files) {
+    if (filepath.endsWith('wsgi.py')) {
+      const parts = filepath.split('/')
+      if (parts.length >= 2) {
+        return parts[parts.length - 2]
+      }
+    }
+  }
+  return 'app';
 }
 
 
