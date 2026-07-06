@@ -1,7 +1,7 @@
 const chalk = require('chalk');
 
 
-export const logger = {
+ const logger = {
     
     success: (msg) => console.log(chalk.green(`${msg}`)),
 
@@ -20,3 +20,5 @@ export const logger = {
  
   dim: (msg) => console.log(chalk.dim(msg)),
 }
+
+module.exports={logger}

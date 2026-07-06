@@ -2,8 +2,9 @@ const {Command} = require('commander')
 const {logger} = require('../ui/logger')
 const {config}= require('../utils/config')
 const inquirer = require('inquirer')
+const {spinner} = require('../ui/spinner')
 const { handleError } = require('../utils/errors')
-
+const SERVER_URL = 'http://localhost:3000'
 
 const loginCommand = new Command('login')
     .description('Login to your ASRKing account')
@@ -30,18 +31,34 @@ const loginCommand = new Command('login')
 
         logger.space();
         spinner.start('Logging in...............')
-        await sleep(2000)
+        const res = await fetch(`${SERVER_URL}/auth/login`,{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: answers.email,
+                password: answers.password
+            })
+        })
 
+        const data = await res.json();
 
-         config.set('apiKey', 'th_demo_key_123')
-      config.set('email', answers.email)
-      config.set('token', answers.token)
+        if(!res.ok)
+        {
+            spinner.fail('Login failed')
+             logger.error(data.error || 'Invalid email or password')
+                process.exit(1)
+        }
+         config.set('apiKey', data.token)
+      config.set('email', data.user.email)
+      config.set('token', data.token)
      
 
 
        spinner.succeed('Logged in successfully')
       logger.space()
-      logger.success(`Welcome, ${answers.email}`)
+      logger.success(`Welcome, ${data.user.email}`)
       logger.space()
         }
         catch(err)

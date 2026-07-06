@@ -11,9 +11,9 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "chalk": "^5.6.2",
-    "commander": "^15.0.0",
-    "inquirer": "^14.0.2",
-    "ora": "^9.4.0"
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "inquirer": "^8.2.7",
+    "ora": "^5.4.1"
   }
 }

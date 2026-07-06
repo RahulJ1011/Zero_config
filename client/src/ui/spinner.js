@@ -3,7 +3,7 @@ const chalk = require('chalk');
 
 let SpinnerInstance = null;
 
-export const spinner ={
+ const spinner ={
 
     start: (msg)=> {
         SpinnerInstance = ora({
@@ -40,3 +40,5 @@ export const spinner ={
         }
     }
 }
+
+module.exports={spinner}

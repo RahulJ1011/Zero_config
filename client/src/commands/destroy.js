@@ -3,14 +3,23 @@ const {logger} = require('../ui/logger')
 const {spinner} = require('../ui/spinner')
 const chalk = require('chalk')
 const inquirer = require('inquirer')
-
-export const destroyCommand = new Command('destroy')
+const { config } = require('../utils/config')
+const SERVER_URL = 'http://localhost:3000'
+ const destroyCommand = new Command('destroy')
 .description('Destroy a deployed app')
 .argument('<app-name>', 'name of the app to destroy')
 .option('-y, --yes', ' skip confirmation')
 .action(async (appName, options)=> {
     try
     {
+
+
+        if(!config.isLoggedIn())
+        {
+            logger.error('you are not logged in')
+            logger.dim('Run: zeroconfig login')
+            process.exit(1);
+        }
         logger.space();
         logger.warn(`you are about to destroy the ${chalk.bold(appName)}`)
         logger.warn('This cannot be undone')
@@ -36,7 +45,45 @@ export const destroyCommand = new Command('destroy')
         }
 
         spinner.start(`Destroying ${appName}...`)
-      await sleep(2000)
+      const listRes = await fetch(`${SERVER_URL}/apps`,{
+        headers:{
+            'Authorization' : `Bearer ${config.get('token')}`
+        }
+      })
+
+      const listData = await listRes.json();
+
+      if(!listRes.ok)
+      {
+        spinner.fail('Failed to fetch apps');
+        logger.error(listData.error || 'Could not reach server')
+        process.exit(1)
+      }
+
+      const app = listData.apps.find(a => a.name === appName);
+
+      if(!app)
+      {
+        spinner.fail(`App "${appName}" not found`)
+        logger.dim('Run: zeroConfig apps to see your deployed apps')
+        process.exit(1);
+      }
+
+      const deleteRes = await fetch(`${SERVER_URL}/apps/${app.id}`, {
+        method:  'DELETE',
+        headers: {
+          'Authorization': `Bearer ${config.get('token')}`
+        }
+      })
+
+      const deleteData = await deleteRes.json()
+
+      if (!deleteRes.ok) {
+        spinner.fail('Failed to destroy app')
+        logger.error(deleteData.error || 'Destroy failed on server')
+        process.exit(1)
+      }
+
       spinner.succeed(`${appName} destroyed`)
 
       logger.space()
@@ -53,3 +100,5 @@ export const destroyCommand = new Command('destroy')
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
+
+module.exports = {destroyCommand}

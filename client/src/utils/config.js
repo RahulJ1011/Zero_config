@@ -34,7 +34,7 @@ function writeConfig(data)
 }
 
 
-export const config =
+ const config =
 {
     get: (key)=> {
         const data = readConfig();
@@ -71,3 +71,4 @@ export const config =
 
 }
 
+module.exports={config}

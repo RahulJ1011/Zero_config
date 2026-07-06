@@ -1,7 +1,7 @@
 const chalk = require('chalk')
 
 
-export function showBanner() {
+ function showBanner() {
   console.log('')
   console.log(
     chalk.bold.blue('  ████████╗██╗  ██╗ █████╗ ██╗  ██╗██╗███╗   ██╗ ██████╗ ')
@@ -27,3 +27,5 @@ export function showBanner() {
   )
   console.log('')
 }
+
+module.exports = {showBanner}

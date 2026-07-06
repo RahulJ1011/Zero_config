@@ -1,8 +1,7 @@
-import { config } from '../utils/config';
 
 
-
-const Command = require('commander');
+const {config} = require('../utils/config')
+const {Command} = require('commander');
 const {detect} = require('../detector/index')
 const {handleUnknown} = require('../detector/providers/unknown')
 const {logger} = require('../ui/logger');
@@ -11,11 +10,11 @@ const {banner} = require('../ui/banner');
 const {handleError} = require('../utils/errors');
 const inquirer = require('inquirer')
 
-export const deployCommand = new Command('deploy')
-    .description("Deploy your app to ASRKing")
-    .option("'y, --yes", 'skip confirmation prompts')
-    .option('-n, --name <name>', 'app name (auto detected if not provided)')
-    .option('-r, --region <region>', 'deployment region', 'eu')
+ const deployCommand = new Command('deploy')
+     .description('Deploy your app to thaking')
+  .option('-y, --yes',          'skip confirmation prompts')
+  .option('-n, --name <name>',  'app name')
+  .option('--lang <language>',  'specify language manually')
     .action(async (options)=> {
         try
         {
@@ -218,3 +217,5 @@ function sleep(ms)
 {
     return new Promise(resolve => setTimeout(resolve,ms))
 }
+
+module.exports={deployCommand}
