@@ -6,9 +6,10 @@ const {detect} = require('../detector/index')
 const {handleUnknown} = require('../detector/providers/unknown')
 const {logger} = require('../ui/logger');
 const {spinner} = require('../ui/spinner')
-const {banner} = require('../ui/banner');
+const {showBanner} = require('../ui/banner');
 const {handleError} = require('../utils/errors');
 const inquirer = require('inquirer')
+const chalk = require('chalk')
 
  const deployCommand = new Command('deploy')
      .description('Deploy your app to thaking')
@@ -45,6 +46,14 @@ const inquirer = require('inquirer')
         `${result.language} · ` +
         `${Math.round(result.confidence * 100)}% confidence`
       )
+
+/*       logger.space()
+      logger.log('  Framework:  ' + chalk.bold(result.framework))
+      logger.log('  Language:   ' + chalk.bold(result.language))
+      logger.log('  Runtime:    ' + chalk.bold(result.runtime))
+      logger.log('  Port:       ' + chalk.bold(result.port)) */
+
+
 let appName = options.name
 if (!appName) {
         const answer = await inquirer.prompt([{
@@ -63,10 +72,11 @@ if (!appName) {
         }])
         appName = answer.appName
       }
-      logger.log('  App name:   ' + chalk.bold(options.name|| 'my-app'))
+      logger.log('  App name:   ' + chalk.bold(appName|| 'my-app'))
       logger.log('  Framework:  ' + chalk.bold(result.framework))
       logger.log('  RunTime:   ' + chalk.bold(result.runtime))
       logger.log('  Port:     ' + chalk.bold(result.port))
+      console.log("appName   ",appName);
 
          if (result.services?.database) {
         logger.log(`  Database:   ${chalk.bold(result.services.database.type)}`)
@@ -82,10 +92,10 @@ if (!appName) {
 
       logger.space()
 
-
+      let proceedAnswer = {proceed: true}
       if(!options.yes)
       {
-            const answer = await inquirer.prompt([{
+            const proceedAnswer = await inquirer.prompt([{
                 type: 'confirm',
                 name: 'proceed',
                 message: 'Deploy now',
@@ -93,7 +103,7 @@ if (!appName) {
             }])
       }
 
-      if(!answer.proceed)
+      if(!proceedAnswer.proceed)
       {
         logger.warn('Deployment cancelled!!!!!!!!')
         process.exit(0)
@@ -107,7 +117,7 @@ if (!appName) {
       try
       {
         const createRes = await fetch(`${SERVER_URL}/apps`,{
-            method:'post',
+            method:'POST',
             headers:{
                 'Content-Type':  'application/json',
             'Authorization': `Bearer ${config.get('token')}`,
@@ -167,10 +177,12 @@ if (!appName) {
       const jobId = deployData.jobId
       let   done  = false
       let   url   = null
+      let attempts = 0;
 
-      while(!done)
+      while(!done && attempts < 60)
       {
         await sleep(2000);
+        attempts++;
 
         const statusRes = await fetch(`${SERVER_URL}/jobs/${jobId}`,{
             headers:{
@@ -178,7 +190,7 @@ if (!appName) {
             }
         })
 
-        const statusData = statusRes.json();
+        const statusData = await statusRes.json();
 
         if(statusData.status === 'completed')
         {
@@ -193,6 +205,16 @@ if (!appName) {
           logger.error(statusData.error || 'Unknown error')
           process.exit(1)
         }
+
+                if (!done) {
+          spinner.update('Deploying... (' + (attempts * 2) + 's elapsed)')
+        }
+
+      }
+
+      if (!done) {
+        spinner.fail('Deployment timed out after 2 minutes')
+        process.exit(1)
       }
 
       logger.space()
@@ -201,11 +223,17 @@ if (!appName) {
 
       if(url)
       {
-        logger.log(' '+ chalk.bold.blue(url))
+        logger.space()
+      logger.success('Your app is live!')
+      logger.space()
+      logger.log('  ' + chalk.bold.blue(url || ('https://' + appName + '.thaking.dev')))
+      logger.space()
+      logger.dim('  App: ' + appName)
+      logger.dim('  Job: #' + jobId)
+      logger.space()
+
       }
-      logger.space()
-      logger.dim(`  App name: ${appName}`)
-      logger.space()
+      
         }
         catch(err)
         {

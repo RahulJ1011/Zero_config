@@ -18,7 +18,7 @@ const registerCommand = new Command('register')
         logger.space();
 
 
-        const answer = await inquirer.prompt([
+        const answers = await inquirer.prompt([
            {
                  type: 'input',
                 name: 'email',
@@ -30,7 +30,7 @@ const registerCommand = new Command('register')
             name: 'password',
             message:'password',
             mask: '*',
-            validate: (val)=> val.length >= 8 || 'Password must ne atleast 8 characters'
+            validate: (val)=> val.length >= 10 || 'Password must ne atleast 8 characters'
            },
            {
               type:    'password',
@@ -64,6 +64,7 @@ const registerCommand = new Command('register')
         if(!res.ok)
         {
             spinner.fail('Registration failed')
+            console.log('Server Response: ', JSON.stringify(data, null, 2))
             logger.error(data.error || 'Could not create account')
             process.exit(1);
         }

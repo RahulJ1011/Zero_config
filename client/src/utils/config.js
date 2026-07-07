@@ -62,7 +62,9 @@ function writeConfig(data)
     isLoggedIn: ()=> 
     {
         const data = readConfig();
-        return !!data.apikey
+        console.log('config data', data);
+        console.log('Token exists: ', !!data.token)
+        return !!data.token
     }
 
 
